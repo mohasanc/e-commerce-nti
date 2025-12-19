@@ -1,0 +1,49 @@
+import 'package:flutter/material.dart';
+
+class CustomTextField extends StatelessWidget {
+  const CustomTextField({
+    super.key,
+    required this.labelText,
+    required this.hintText,
+    this.validator,
+    required this.controller,
+    this.obscureText,
+    this.suffixIcon,
+  });
+
+  final String labelText, hintText;
+  final String? Function(String?)? validator;
+  final TextEditingController controller;
+  final bool? obscureText;
+  final Widget? suffixIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          labelText,
+          style: TextStyle(
+            color: Color(0XFF4E0189),
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 10),
+        TextFormField(
+          controller: controller,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: validator,
+          obscureText: obscureText ?? false,
+          decoration: InputDecoration(
+            suffixIcon: suffixIcon,
+            hint: Text(hintText),
+            hintStyle: TextStyle(color: Color(0xff9E9E9E)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
+      ],
+    );
+  }
+}
