@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:products/models/products.dart';
 import 'package:products/screens/details_product_screen.dart';
 
 class CustomProductItems extends StatefulWidget {
-  const CustomProductItems({
-    super.key,
-    required this.title,
-    required this.image,
-    required this.price,
-  });
-  final String title;
-  final String image;
-  final String price;
+  const CustomProductItems({super.key, required this.product});
+  final Product product;
 
   @override
   State<CustomProductItems> createState() => _CustomProductItemsState();
@@ -27,11 +21,7 @@ class _CustomProductItemsState extends State<CustomProductItems> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailsProductScreen(
-              title: widget.title,
-              image: widget.image,
-              price: widget.price,
-            ),
+            builder: (context) => DetailsProductScreen(product: widget.product),
           ),
         );
       },
@@ -53,9 +43,9 @@ class _CustomProductItemsState extends State<CustomProductItems> {
                       topRight: Radius.circular(10),
                     ),
                     image: DecorationImage(
-                      image: widget.image.startsWith('http')
-                          ? NetworkImage(widget.image)
-                          : AssetImage(widget.image) as ImageProvider,
+                      image: widget.product.image.startsWith('http')
+                          ? NetworkImage(widget.product.image)
+                          : AssetImage(widget.product.image) as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -90,7 +80,7 @@ class _CustomProductItemsState extends State<CustomProductItems> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.title,
+                          widget.product.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -100,7 +90,7 @@ class _CustomProductItemsState extends State<CustomProductItems> {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          '${widget.price} EGP',
+                          '\$${widget.product.price}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

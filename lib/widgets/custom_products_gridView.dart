@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:products/models/products.dart';
 import 'package:products/widgets/custom_product_items.dart';
 
 class ProductsGridview extends StatelessWidget {
   const ProductsGridview({super.key, required this.products});
-  final List<dynamic> products;
+  final List<Product> products;
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -15,11 +16,7 @@ class ProductsGridview extends StatelessWidget {
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {
-        return CustomProductItems(
-          title: products[index]['title'],
-          price: products[index]['price'].toString(),
-          image: products[index]['thumbnail'],
-        );
+        return CustomProductItems(product: products[index]);
       },
     );
   }

@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:products/models/products.dart';
 import 'package:products/screens/filter_products_by_category_screen.dart';
-import 'package:products/widgets/custom_product_items.dart';
 import 'package:products/widgets/custom_products_gridView.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -14,14 +14,14 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
-  List<dynamic> products = [];
+  List<Product> products = [];
   List<dynamic> categories = [];
   final dio = Dio();
 
   @override
   void initState() {
     super.initState();
-    getAllProducts();
+    //getAllProducts();
     getAllCategories();
   }
 
@@ -113,14 +113,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Future<List<dynamic>> getAllProducts() async {
+  Future<List<Product>> getAllProducts() async {
     try {
       Response response = await dio.get('https://dummyjson.com/products');
-
-      setState(() {
-        Map<String, dynamic> data = response.data;
-        products = data['products'];
-      });
+      Map<String, dynamic> data = response.data;
+      for (var element in data['products']) {
+        Product product = Product.fromJsonToProduct(element);
+        products.add(product);
+      }
       log(products.toString());
       return products;
     } catch (e) {

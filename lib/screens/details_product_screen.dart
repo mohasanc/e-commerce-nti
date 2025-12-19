@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:products/models/products.dart';
 
 class DetailsProductScreen extends StatefulWidget {
-  const DetailsProductScreen({
-    super.key,
-    required this.title,
-    required this.image,
-    required this.price,
-  });
-  final String title;
-  final String image;
-  final String price;
+  const DetailsProductScreen({super.key, required this.product});
+  final Product product;
 
   @override
   State<DetailsProductScreen> createState() => _DetailsProductScreenState();
@@ -31,14 +25,15 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Stack(
                 children: [
-                  Image.asset(
-                    widget.image,
+                  Image.network(
+                    widget.product.image,
                     fit: BoxFit.cover,
-                    width: 375,
-                    height: 408,
+                    width: 338,
+                    height: 400,
                   ),
                   Positioned(
                     left: 12,
@@ -82,9 +77,11 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.title,
+                              widget.product.name,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -92,7 +89,7 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
                               children: [
                                 Icon(Icons.star, color: Color(0xffFFC107)),
                                 Text(
-                                  "4.5",
+                                  widget.product.rating.toString(),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -101,7 +98,7 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
                                 TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    "(20 Review)",
+                                    "(200 Reviews)",
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -114,7 +111,9 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
                           ],
                         ),
                         Text(
-                          widget.price,
+                          '\$${widget.product.price.toString()}',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -134,7 +133,7 @@ class _DetailsProductScreenState extends State<DetailsProductScreen> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      "Describtion",
+                      widget.product.describtion ?? '',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
