@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:products/screens/add_product_screen.dart';
 import 'package:products/screens/edit_profile_screen.dart';
 import 'package:products/screens/login_screen.dart';
 import 'package:products/screens/products_screen.dart';
@@ -16,11 +17,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: {
         '/products_screen': (context) => ProductsScreen(),
+        '/add_product': (context) => AddProductScreen(),
         '/sign_up_screen': (context) => SignUpScreen(),
         '/login_screen': (context) => LoginScreen(),
         '/edit_profile': (context) => EditProfile(),
       },
-      initialRoute: '/login_screen',
+      initialRoute: '/add_product',
       title: 'E-commerce',
       debugShowCheckedModeBanner: false,
       home: LoginScreen(),

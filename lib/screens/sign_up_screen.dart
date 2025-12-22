@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:products/models/validators.dart';
@@ -17,16 +18,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isActive = false;
   bool? isCheckBoxActive = false;
   GlobalKey<FormState> key = GlobalKey();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
   void dispose() {
     super.dispose();
     emailController.dispose();
-    phoneController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
     passwordController.dispose();
+  }
+
+  Dio dio = Dio();
+  Future<void> signUp() async {
+    try {
+      Response response = await dio.post(
+        'https://accessories-eshop.runasp.net/api/auth/register',
+        data: {
+          'firstName': firstNameController.text,
+          'lastName': lastNameController.text,
+          'email': emailController.text,
+          'password': passwordController.text,
+        },
+      );
+      log('Response: ${response.data}');
+    } on DioException catch (e) {
+      String errorMessage = e.response?.data.toString() ?? e.message.toString();
+      log('Error: $errorMessage');
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   @override
@@ -54,7 +78,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       color: Color(0xff999EA1),
                     ),
                   ),
+
                   SizedBox(height: 50),
+                  CustomTextField(
+                    labelText: "First Name",
+                    hintText: "Please enter your first name",
+                    controller: firstNameController,
+                    validator: (value) {
+                      return Validator.validateUserName(value!);
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  CustomTextField(
+                    labelText: "Last Name",
+                    hintText: "Please enter your last name",
+                    controller: lastNameController,
+                    validator: (value) {
+                      return Validator.validateUserName(value!);
+                    },
+                  ),
+                  SizedBox(height: 10),
                   CustomTextField(
                     labelText: "Email",
                     hintText: "Please enter your email",
@@ -65,15 +108,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
 
                   SizedBox(height: 10),
-                  CustomTextField(
-                    labelText: "Phone number",
-                    hintText: "Please enter your phone",
-                    controller: phoneController,
-                    validator: (value) {
-                      return Validator.validatePhoneNumber(value!);
-                    },
-                  ),
-                  SizedBox(height: 10),
+
                   CustomTextField(
                     labelText: "Password",
                     hintText: "Please enter your password",
@@ -137,11 +172,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     onPressed: () {
-                      // if (key.currentState!.validate()) {
-                      //   log("Done.");
-                      //   Navigator.of(context).pushNamed('/products_screen');
-                      // }
-                      Navigator.of(context).pushNamed('/products_screen');
+                      if (key.currentState!.validate()) {
+                        log('First Name : ${firstNameController.text}');
+                        log('Last Name : ${lastNameController.text}');
+                        log('Email : ${emailController.text}');
+                        log('Password : ${passwordController.text}');
+                        signUp();
+                        // Navigator.of(context).pushNamed('/products_screen');
+                      }
 
                       // Navigator.of(context).pushReplacement(
                       //   MaterialPageRoute(

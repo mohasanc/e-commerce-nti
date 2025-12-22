@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:products/models/validators.dart';
@@ -24,6 +25,25 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
+  }
+
+  Dio dio = Dio();
+  Future<void> login() async {
+    try {
+      Response response = await dio.post(
+        'https://accessories-eshop.runasp.net/api/auth/login',
+        data: {
+          'email': emailController.text,
+          'password': passwordController.text,
+        },
+      );
+      log('Login: ${response.data}');
+    } on DioException catch (e) {
+      String errorMessage = e.response?.data.toString() ?? e.message.toString();
+      log('Error: $errorMessage ');
+    } catch (e) {
+      log('Unexpected error: $e');
+    }
   }
 
   @override
@@ -129,11 +149,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: () {
                         // if (key.currentState!.validate()) {
-                        //   log('Email : ${emailController.text}');
-                        //   log('Password : ${passwordController.text}');
-                        //   Navigator.of(context).pushNamed('/products_screen');
-                        // }
+                        login();
+                        log('Email : ${emailController.text}');
+                        log('Password : ${passwordController.text}');
                         Navigator.of(context).pushNamed('/products_screen');
+                        // }
+                        // Navigator.of(context).pushNamed('/products_screen');
                         // Navigator.of(context).pushReplacement(
                         //   MaterialPageRoute(
                         //     builder: (context) {

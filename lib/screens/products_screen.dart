@@ -41,6 +41,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
           icon: Icon(Icons.arrow_back_ios_new),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/add_product');
+        },
+        child: Icon(Icons.add),
+      ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16, top: 20),
         child: Column(
