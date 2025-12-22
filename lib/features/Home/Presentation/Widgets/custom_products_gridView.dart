@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:products/models/products.dart';
-import 'package:products/widgets/custom_product_items.dart';
+import 'package:products/features/Add_Product/Data/Models/products.dart';
+import 'package:products/features/Home/Presentation/Widgets/custom_product_items.dart';
 
 class ProductsGridview extends StatelessWidget {
   const ProductsGridview({super.key, required this.products});

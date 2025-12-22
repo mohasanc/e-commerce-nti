@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:products/models/products.dart';
-import 'package:products/screens/filter_products_by_category_screen.dart';
-import 'package:products/widgets/custom_products_gridView.dart';
+import 'package:products/features/Add_Product/Data/Models/products.dart';
+import 'package:products/features/Home/Presentation/Screens/filter_products_by_category_screen.dart';
+import 'package:products/features/Home/Presentation/Widgets/custom_products_gridView.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -42,10 +42,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0XFF4E0189),
         onPressed: () {
           Navigator.pushNamed(context, '/add_product');
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16, top: 20),

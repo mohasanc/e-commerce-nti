@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:products/models/products.dart';
-import 'package:products/widgets/custom_products_gridView.dart';
+import 'package:products/features/Add_Product/Data/Models/products.dart';
+import 'package:products/features/Home/Presentation/Widgets/custom_products_gridView.dart';
 
 class FilterProductsByCategory extends StatefulWidget {
   const FilterProductsByCategory({super.key, required this.categoryName});

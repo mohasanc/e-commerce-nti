@@ -1,6 +1,9 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:products/models/products.dart';
-import 'package:products/screens/details_product_screen.dart';
+import 'package:products/features/Add_Product/Data/Models/products.dart';
+import 'package:products/features/Home/Presentation/Screens/details_product_screen.dart';
 
 class CustomProductItems extends StatefulWidget {
   const CustomProductItems({super.key, required this.product});
@@ -12,6 +15,24 @@ class CustomProductItems extends StatefulWidget {
 
 class _CustomProductItemsState extends State<CustomProductItems> {
   bool isFav = false;
+  Dio dio = Dio();
+
+  Future<void> deleteProduct({required int id}) async {
+    try {
+      Response response = await dio.delete(
+        'https://dummyjson.com/products/$id',
+      );
+      log('Product deleted: ${response.data}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${widget.product.name} deleted successfully')),
+      );
+    } on DioException catch (e) {
+      String errorMessage = e.response?.data ?? e.message.toString();
+      log('Error deleting product: ${errorMessage.toString()}');
+    } catch (e) {
+      log('Error deleting product: ${e.toString()}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,11 +123,36 @@ class _CustomProductItemsState extends State<CustomProductItems> {
                       ],
                     ),
                   ),
-
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add_circle),
-                    color: const Color(0xff6055D8),
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Delete Product'),
+                          content: Text(
+                            'Are you sure you want to delete this product?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await deleteProduct(id: widget.product.id ?? 1);
+                              },
+                              child: Text(
+                                'Delete',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.delete),
+                    color: Colors.red,
                   ),
                 ],
               ),

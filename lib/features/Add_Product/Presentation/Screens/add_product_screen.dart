@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:products/widgets/custom_text_field.dart';
+import 'package:products/Core/Shared/custom_text_field.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});

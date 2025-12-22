@@ -2,9 +2,9 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:products/models/validators.dart';
-import 'package:products/screens/sign_up_screen.dart';
-import 'package:products/widgets/custom_text_field.dart';
+import 'package:products/features/Auth/Data/Models/validators.dart';
+import 'package:products/features/Auth/Presentation/Screens/sign_up_screen.dart';
+import 'package:products/Core/Shared/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
