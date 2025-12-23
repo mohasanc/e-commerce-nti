@@ -178,7 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         log('Email : ${emailController.text}');
                         log('Password : ${passwordController.text}');
                         signUp();
-                        // Navigator.of(context).pushNamed('/products_screen');
+                        Navigator.of(context).pushNamed('/products_screen');
                       }
 
                       // Navigator.of(context).pushReplacement(

@@ -1,177 +1,182 @@
 import 'package:flutter/material.dart';
+import 'package:products/Core/Shared/custom_text_field.dart';
 
-class EditProfile extends StatelessWidget {
+class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
+
+  @override
+  State<EditProfile> createState() => _EditProfileState();
+}
+
+class _EditProfileState extends State<EditProfile> {
+  final _firstNameController = TextEditingController(text: 'Mohamed');
+  final _lastNameController = TextEditingController(text: 'Hassan');
+  final _usernameController = TextEditingController(text: 'mohassanc');
+  final _emailController = TextEditingController(text: 'itsmohassan@gmail.com');
+  final _phoneController = TextEditingController(text: '+201009961956');
+  String? _gender;
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      height: 180,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.orange.shade300,
-                            Colors.brown.shade400,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(40),
-                          bottomRight: Radius.circular(40),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Edit Profile',
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+        ),
+        leading: BackButton(color: Colors.black87),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 8),
+            Center(
+              child: Stack(
+                children: [
+                  const CircleAvatar(
+                    radius: 48,
+                    backgroundImage: AssetImage('assets/images/profile.jpg'),
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: const Color(0XFF4E0189),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 16,
                         ),
                       ),
                     ),
-                    Positioned(
-                      bottom: -5,
-                      child: Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: AssetImage(
-                              "assets/images/image1.jpg",
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.blue,
-                              child: Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            CustomTextField(
+              labelText: 'First Name',
+              hintText: 'Enter first name',
+              controller: _firstNameController,
+            ),
+            CustomTextField(
+              labelText: 'Last Name',
+              hintText: 'Enter last name',
+              controller: _lastNameController,
+            ),
+            CustomTextField(
+              labelText: 'Username',
+              hintText: 'Enter username',
+              controller: _usernameController,
+            ),
+            CustomTextField(
+              labelText: 'Email',
+              hintText: 'Enter email',
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            CustomTextField(
+              labelText: 'Phone',
+              hintText: 'Enter phone',
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+            ),
+
+            Text(
+              'Gender',
+              style: TextStyle(
+                color: Color(0XFF4E0189),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              value: _gender,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Edit Profile",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'Male', child: Text('Male')),
+                DropdownMenuItem(value: 'Female', child: Text('Female')),
+              ],
+              onChanged: (v) => setState(() => _gender = v),
+            ),
 
-                      buildLabel("First Name"),
-                      buildInput("Enter your first name"),
+            const SizedBox(height: 20),
 
-                      SizedBox(height: 12),
-                      buildLabel("Last Name"),
-                      buildInput("Enter your last name"),
-
-                      SizedBox(height: 12),
-                      buildLabel("Username"),
-                      buildInput("Enter username"),
-
-                      SizedBox(height: 12),
-                      buildLabel("Email"),
-                      buildInput("Enter email"),
-
-                      SizedBox(height: 12),
-                      buildLabel("Phone Number"),
-                      buildInput("Enter phone number"),
-
-                      SizedBox(height: 12),
-                      buildLabel("Birth"),
-                      buildInput("Select birth date"),
-
-                      SizedBox(height: 12),
-                      buildLabel("Gender"),
-                      DropdownButtonFormField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                        items: const [
-                          DropdownMenuItem(value: "Male", child: Text("Male")),
-                          DropdownMenuItem(
-                            value: "Female",
-                            child: Text("Female"),
-                          ),
-                          DropdownMenuItem(
-                            value: "Other",
-                            child: Text("Other"),
-                          ),
-                        ],
-                        onChanged: (value) {},
-                      ),
-
-                      SizedBox(height: 20),
-
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            backgroundColor: Colors.blue.shade700,
-                          ),
-                          onPressed: () {},
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Change Password",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(Icons.lock, color: Colors.white),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Profile saved')),
+                  );
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0XFF4E0189),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-              ],
+                child: const Text(
+                  'Save',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget buildLabel(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: Colors.grey.shade700,
-      ),
-    );
-  }
+            const SizedBox(height: 12),
 
-  Widget buildInput(String hint) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hint,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+            Center(
+              child: TextButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Change password not implemented yet')));
+                },
+                icon: const Icon(Icons.lock, color: Color(0XFF4E0189)),
+                label: const Text(
+                  'Change Password',
+                  style: TextStyle(
+                    color: Color(0XFF4E0189),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

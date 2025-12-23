@@ -118,7 +118,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ElevatedButton(
               onPressed: () {
                 addProduct();
-                //Navigator.of(context).pushNamed('/products_screen');
+                Navigator.of(context).pushNamed('/products_screen');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0XFF4E0189),

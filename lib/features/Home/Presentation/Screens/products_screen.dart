@@ -41,13 +41,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
           icon: Icon(Icons.arrow_back_ios_new),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0XFF4E0189),
-        onPressed: () {
-          Navigator.pushNamed(context, '/add_product');
-        },
-        child: Icon(Icons.add, color: Colors.white),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: Color(0XFF4E0189),
+      //   onPressed: () {
+      //     Navigator.pushNamed(context, '/add_product');
+      //   },
+      //   child: Icon(Icons.add, color: Colors.white),
+      // ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16, top: 20),
         child: Column(

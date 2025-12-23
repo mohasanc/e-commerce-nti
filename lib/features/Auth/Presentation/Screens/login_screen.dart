@@ -148,20 +148,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       onPressed: () {
-                        // if (key.currentState!.validate()) {
-                        login();
-                        log('Email : ${emailController.text}');
-                        log('Password : ${passwordController.text}');
-                        Navigator.of(context).pushNamed('/products_screen');
-                        // }
-                        // Navigator.of(context).pushNamed('/products_screen');
-                        // Navigator.of(context).pushReplacement(
-                        //   MaterialPageRoute(
-                        //     builder: (context) {
-                        //       return ProductsScreen();
-                        //     },
-                        //   ),
-                        // );
+                        if (key.currentState!.validate()) {
+                          login();
+                          log('Email : ${emailController.text}');
+                          log('Password : ${passwordController.text}');
+                          Navigator.of(context).pushNamed('/products_screen');
+                        }
                       },
                       child: Text(
                         'Login',
