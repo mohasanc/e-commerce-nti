@@ -113,7 +113,7 @@ class _EditProfileState extends State<EditProfile> {
             ),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
-              value: _gender,
+              initialValue: _gender,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),

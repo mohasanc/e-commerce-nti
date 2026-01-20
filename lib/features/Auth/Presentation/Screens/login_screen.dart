@@ -1,10 +1,13 @@
 import 'dart:developer';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:products/features/Auth/Data/Models/validators.dart';
-import 'package:products/features/Auth/Presentation/Screens/sign_up_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:products/features/Auth/Data/models/validators.dart';
+import 'package:products/features/Auth/presentation/Screens/sign_up_screen.dart';
 import 'package:products/Core/Shared/custom_text_field.dart';
+import 'package:products/features/Auth/presentation/cubits/auth_cubit.dart';
+import 'package:products/features/Auth/presentation/cubits/auth_state.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,25 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
-  }
-
-  Dio dio = Dio();
-  Future<void> login() async {
-    try {
-      Response response = await dio.post(
-        'https://accessories-eshop.runasp.net/api/auth/login',
-        data: {
-          'email': emailController.text,
-          'password': passwordController.text,
-        },
-      );
-      log('Login: ${response.data}');
-    } on DioException catch (e) {
-      String errorMessage = e.response?.data.toString() ?? e.message.toString();
-      log('Error: $errorMessage ');
-    } catch (e) {
-      log('Unexpected error: $e');
-    }
   }
 
   @override
@@ -136,31 +120,66 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 16),
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 45,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xff4E0189),
-                        minimumSize: Size(double.infinity, 45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(10),
+                  BlocListener<LoginCubit, AuthState>(
+                    listener: (context, state) {
+                      if (state is LogingLoading) {
+                        Fluttertoast.showToast(
+                          msg: "Logging in...",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.white,
+                        );
+                      } else if (state is LoginSuccess) {
+                        Fluttertoast.showToast(
+                          msg: "Login Successful!",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                        );
+                        Navigator.of(
+                          context,
+                        ).pushNamed('/main_screen');
+                      } else if (state is LoginFailure) {
+                        Fluttertoast.showToast(
+                          msg: state.message,
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        );
+                      }
+                    },
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 45,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff4E0189),
+                          minimumSize: Size(double.infinity, 45),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(10),
+                          ),
                         ),
-                      ),
-                      onPressed: () {
-                        if (key.currentState!.validate()) {
-                          login();
-                          log('Email : ${emailController.text}');
-                          log('Password : ${passwordController.text}');
-                          Navigator.of(context).pushNamed('/products_screen');
-                        }
-                      },
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
+                        onPressed: () {
+                          if (key.currentState!.validate()) {
+                            //login();
+                            log('Email : ${emailController.text}');
+                            log('Password : ${passwordController.text}');
+                            // BlocProvider.of<LoginCubit>(context).login(
+                            //   emailController: emailController.text,
+                            //   passwordController: passwordController.text,
+                            // );
+                          }
+                        },
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -233,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 85),
+                  SizedBox(height: 70),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:products/features/Auth/Data/Models/validators.dart';
-import 'package:products/features/Auth/Presentation/Screens/login_screen.dart';
+import 'package:products/features/Auth/data/models/validators.dart';
+import 'package:products/features/Auth/presentation/Screens/login_screen.dart';
 import 'package:products/Core/Shared/custom_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -178,7 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         log('Email : ${emailController.text}');
                         log('Password : ${passwordController.text}');
                         signUp();
-                        Navigator.of(context).pushNamed('/products_screen');
+                        // Navigator.of(context).pushNamed('/products_screen');
                       }
 
                       // Navigator.of(context).pushReplacement(

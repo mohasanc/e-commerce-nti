@@ -1,8 +1,10 @@
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:products/Core/Shared/custom_text_field.dart';
+import 'package:products/features/add_product/presentation/Cubits/add_product_cubit/add_product_cubit.dart';
+import 'package:products/features/add_product/presentation/Cubits/add_product_cubit/add_product_states.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -36,111 +38,124 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _priceController.clear();
   }
 
-  bool isLoading = false;
-  Dio dio = Dio();
-  Future<void> addProduct() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      Response response = await dio.post(
-        'https://dummyjson.com/products/add',
-        data: {
-          'title': _titleController.text,
-          'description': _descController.text,
-          'image': _imageUrlController.text,
-          'stock': int.parse(_stockController.text),
-          'price': double.parse(_priceController.text),
-        },
+  void addProduct(BuildContext context) {
+    if (_titleController.text.isEmpty ||
+        _priceController.text.isEmpty ||
+        _imageUrlController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields')),
       );
-      setState(() {
-        isLoading = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Product added successfully!')));
-      log('Product added: ${response.data}');
-      clearFields();
-    } on DioException catch (e) {
-      String errorMessage = e.response?.data ?? e.message.toString();
-      log('Error: $errorMessage');
-      isLoading = false;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $errorMessage')));
-    } catch (e) {
-      log('Error: ${e.toString()}');
-      isLoading = false;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      return;
     }
+
+    context.read<AddProductCubit>().addProduct(
+      name: _titleController.text,
+      image: _imageUrlController.text,
+      price: double.parse(_priceController.text),
+      description: _descController.text,
+      category: 'electronics',
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Add Product'), centerTitle: true),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CustomTextField(
-              labelText: 'Title',
-              hintText: 'Enter title',
-              controller: _titleController,
-            ),
-            CustomTextField(
-              labelText: 'Description',
-              hintText: 'Enter description',
-              controller: _descController,
-              maxLines: 3,
-            ),
-            CustomTextField(
-              labelText: 'Image URL',
-              hintText: 'Enter image url',
-              controller: _imageUrlController,
-            ),
-            CustomTextField(
-              labelText: 'Stock',
-              hintText: 'Enter stock',
-              controller: _stockController,
-              keyboardType: TextInputType.number,
-            ),
-            CustomTextField(
-              labelText: 'Price',
-              hintText: 'Enter price',
-              controller: _priceController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                addProduct();
-                Navigator.of(context).pushNamed('/products_screen');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0XFF4E0189),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+    return BlocProvider(
+      create: (context) => AddProductCubit(),
+      child: BlocListener<AddProductCubit, AddProductStates>(
+        listener: (context, state) {
+          if (state is AddProductSuccess) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+            clearFields();
+            log('Product added successfully');
+          } else if (state is AddProductFailure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Error: ${state.error}')));
+            log('Error: ${state.error}');
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(title: const Text('Add Product'), centerTitle: true),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CustomTextField(
+                  labelText: 'Title',
+                  hintText: 'Enter title',
+                  controller: _titleController,
                 ),
-              ),
-              child: isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14.0),
-                      child: Text(
-                        'Add Product',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                CustomTextField(
+                  labelText: 'Description',
+                  hintText: 'Enter description',
+                  controller: _descController,
+                  maxLines: 3,
+                ),
+                CustomTextField(
+                  labelText: 'Image URL',
+                  hintText: 'Enter image url',
+                  controller: _imageUrlController,
+                ),
+                CustomTextField(
+                  labelText: 'Stock',
+                  hintText: 'Enter stock',
+                  controller: _stockController,
+                  keyboardType: TextInputType.number,
+                ),
+                CustomTextField(
+                  labelText: 'Price',
+                  hintText: 'Enter price',
+                  controller: _priceController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                BlocBuilder<AddProductCubit, AddProductStates>(
+                  builder: (context, state) {
+                    bool isLoading = state is AddProductLoading;
+                    return ElevatedButton(
+                      onPressed: isLoading ? null : () => addProduct(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0XFF4E0189),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                    ),
+                      child: isLoading
+                          ? const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 14.0),
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 14.0),
+                              child: Text(
+                                'Add Product',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:products/features/Profile/Presentation/Widgets/custom_listTile.dart';
+import 'package:products/features/profile/Presentation/Widgets/custom_listTile.dart';
 
 class ProfileBody extends StatelessWidget {
   const ProfileBody({super.key});

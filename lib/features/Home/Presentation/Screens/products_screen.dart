@@ -1,10 +1,11 @@
-import 'dart:developer';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:products/features/Add_Product/Data/Models/products.dart';
-import 'package:products/features/Home/Presentation/Screens/filter_products_by_category_screen.dart';
-import 'package:products/features/Home/Presentation/Widgets/custom_products_gridView.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:products/features/home/Presentation/Widgets/categories_widget.dart';
+import 'package:products/features/home/Presentation/Widgets/custom_products_gridView.dart';
+import 'package:products/features/home/presentation/Cubits/categories_cubit/categories_cubit.dart';
+import 'package:products/features/home/presentation/Cubits/categories_cubit/categories_states.dart';
+import 'package:products/features/home/presentation/Cubits/products_cubit/product_states.dart';
+import 'package:products/features/home/presentation/Cubits/products_cubit/products_cubit.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -14,25 +15,21 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
-  List<Product> products = [];
-  List<dynamic> categories = [];
-  final dio = Dio();
-
   @override
   void initState() {
+    BlocProvider.of<ProductsCubit>(context).getAllProducts();
+    BlocProvider.of<CategoriesCubit>(context).getAllCategories();
     super.initState();
-    //getAllProducts();
-    getAllCategories();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         title: Text(
-          "Products",
+          "Products & Categories",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
@@ -41,76 +38,51 @@ class _ProductsScreenState extends State<ProductsScreen> {
           icon: Icon(Icons.arrow_back_ios_new),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: Color(0XFF4E0189),
-      //   onPressed: () {
-      //     Navigator.pushNamed(context, '/add_product');
-      //   },
-      //   child: Icon(Icons.add, color: Colors.white),
-      // ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16, top: 20),
         child: Column(
           children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView.builder(
-                  itemCount: categories.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FilterProductsByCategory(
-                                categoryName: categories[index]['name'],
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: 100,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xff6055D8)),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${categories[index]['name']}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+            Row(
+              children: [
+                Text(
+                  'Categories',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-              ),
+              ],
             ),
-            SizedBox(height: 16),
+            BlocBuilder<CategoriesCubit, CategoriesStates>(
+              builder: (context, state) {
+                if (state is CategoriesLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is CategoriesSuccess) {
+                  return CategoriesWidget(categories: state.categories);
+                } else if (state is CategoriesFailure) {
+                  return Center(child: Text('Failed to load categories'));
+                }
+                return SizedBox.shrink();
+              },
+            ),
+            Row(
+              children: [
+                Text(
+                  'Products',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            SizedBox(height: 12),
             Expanded(
               flex: 7,
-              child: FutureBuilder(
-                future: getAllProducts(),
-                builder: (context, snapShot) {
-                  if (snapShot.hasData) {
-                    return snapShot.data!.isEmpty
-                        ? Text("No products found")
-                        : ProductsGridview(products: products);
-                  } else if (snapShot.connectionState ==
-                      ConnectionState.waiting) {
+              child: BlocBuilder<ProductsCubit, ProductStates>(
+                builder: (context, state) {
+                  if (state is ProductsLoading) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (snapShot.hasError) {
-                    return Center(child: Text('Error: ${snapShot.error}'));
+                  } else if (state is ProductsSuccess) {
+                    return ProductsGridview(products: state.products);
+                  } else if (state is ProductsFailure) {
+                    return Center(child: Text('Failed to load products'));
                   }
-                  return SizedBox.shrink();
+                  return Center(child: CircularProgressIndicator());
                 },
               ),
             ),
@@ -118,34 +90,5 @@ class _ProductsScreenState extends State<ProductsScreen> {
         ),
       ),
     );
-  }
-
-  Future<List<Product>> getAllProducts() async {
-    try {
-      Response response = await dio.get('https://dummyjson.com/products');
-      Map<String, dynamic> data = response.data;
-      for (var element in data['products']) {
-        Product product = Product.fromJsonToProduct(element);
-        products.add(product);
-      }
-      log(products.toString());
-      return products;
-    } catch (e) {
-      log('Error: ${e.toString()}');
-      return [];
-    }
-  }
-
-  Future<void> getAllCategories() async {
-    try {
-      Response response = await dio.get(
-        'https://dummyjson.com/products/categories',
-      );
-      setState(() {
-        categories = response.data;
-      });
-    } catch (e) {
-      log('Error: ${e.toString()}');
-    }
   }
 }

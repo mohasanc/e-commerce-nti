@@ -1,9 +1,8 @@
-import 'dart:developer';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:products/features/Add_Product/Data/Models/products.dart';
-import 'package:products/features/Home/Presentation/Screens/details_product_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:products/features/add_product/data/models/products.dart';
+import 'package:products/features/home/Presentation/Screens/details_product_screen.dart';
+import 'package:products/features/home/presentation/Cubits/products_cubit/products_cubit.dart';
 
 class CustomProductItems extends StatefulWidget {
   const CustomProductItems({super.key, required this.product});
@@ -15,24 +14,6 @@ class CustomProductItems extends StatefulWidget {
 
 class _CustomProductItemsState extends State<CustomProductItems> {
   bool isFav = false;
-  Dio dio = Dio();
-
-  Future<void> deleteProduct({required int id}) async {
-    try {
-      Response response = await dio.delete(
-        'https://dummyjson.com/products/$id',
-      );
-      log('Product deleted: ${response.data}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${widget.product.name} deleted successfully')),
-      );
-    } on DioException catch (e) {
-      String errorMessage = e.response?.data ?? e.message.toString();
-      log('Error deleting product: ${errorMessage.toString()}');
-    } catch (e) {
-      log('Error deleting product: ${e.toString()}');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +108,7 @@ class _CustomProductItemsState extends State<CustomProductItems> {
                     onPressed: () async {
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
+                        builder: (ctxt) => AlertDialog(
                           title: Text('Delete Product'),
                           content: Text(
                             'Are you sure you want to delete this product?',
@@ -140,7 +121,9 @@ class _CustomProductItemsState extends State<CustomProductItems> {
                             TextButton(
                               onPressed: () async {
                                 Navigator.of(context).pop();
-                                await deleteProduct(id: widget.product.id ?? 1);
+                                await BlocProvider.of<ProductsCubit>(
+                                  context,
+                                ).deleteProduct(id: widget.product.id!);
                               },
                               child: Text(
                                 'Delete',

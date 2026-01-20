@@ -1,8 +1,8 @@
-import 'dart:developer';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:products/features/Add_Product/Data/Models/products.dart';
-import 'package:products/features/Home/Presentation/Widgets/custom_products_gridView.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:products/features/home/Presentation/Widgets/custom_products_gridView.dart';
+import 'package:products/features/home/presentation/Cubits/filter_products_cubit/filter_products_cubit.dart';
+import 'package:products/features/home/presentation/Cubits/filter_products_cubit/filter_products_states.dart';
 
 class FilterProductsByCategory extends StatefulWidget {
   const FilterProductsByCategory({super.key, required this.categoryName});
@@ -13,14 +13,19 @@ class FilterProductsByCategory extends StatefulWidget {
 }
 
 class FilterProductsByCategoryState extends State<FilterProductsByCategory> {
-  Dio dio = Dio();
-  List<Product> products = [];
+  late FilterProductsCubit filterProductsCubit;
 
   @override
   void initState() {
-    log(widget.categoryName);
-    filterProductsByCategory();
+    filterProductsCubit = FilterProductsCubit();
+    filterProductsCubit.getProductsByCategory(widget.categoryName);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    filterProductsCubit.close();
+    super.dispose();
   }
 
   @override
@@ -39,11 +44,11 @@ class FilterProductsByCategoryState extends State<FilterProductsByCategory> {
           icon: Icon(Icons.arrow_back_ios),
         ),
       ),
-      body: FutureBuilder(
-        future: filterProductsByCategory(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return snapshot.data!.isEmpty
+      body: BlocBuilder<FilterProductsCubit, FilterProductsStates>(
+        bloc: filterProductsCubit,
+        builder: (context, state) {
+          if (state is FilterProductsSuccess) {
+            return state.products.isEmpty
                 ? Center(
                     child: Text(
                       'No Products Found',
@@ -52,29 +57,21 @@ class FilterProductsByCategoryState extends State<FilterProductsByCategory> {
                   )
                 : Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: ProductsGridview(products: products),
+                    child: ProductsGridview(products: state.products),
                   );
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
+          } else if (state is FilterProductsLoading) {
             return Center(child: CircularProgressIndicator());
+          } else if (state is FilterProductsFailure) {
+            return Center(
+              child: Text(
+                'Failed to load products',
+                style: TextStyle(fontSize: 18),
+              ),
+            );
           }
           return SizedBox.shrink();
         },
       ),
     );
-  }
-
-  Future<List<Product>> filterProductsByCategory() async {
-    Response response = await dio.get(
-      'https://dummyjson.com/products/category/${widget.categoryName}',
-    );
-    Map<String, dynamic> data = response.data;
-    //products = data["products"];
-    for (var element in data["products"]) {
-      Product product = Product.fromJsonToProduct(element);
-      products.add(product);
-    }
-    log('products: $products');
-
-    return products;
   }
 }

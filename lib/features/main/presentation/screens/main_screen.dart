@@ -1,9 +1,13 @@
 // features/main/presentation/screen/main_screen.dart
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:products/features/Add_Product/Presentation/Screens/add_product_screen.dart';
-import 'package:products/features/Home/Presentation/Screens/products_screen.dart';
-import 'package:products/features/Profile/Presentation/Screens/myProfile_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:products/features/add_product/presentation/Cubits/add_product_cubit/add_product_cubit.dart';
+import 'package:products/features/add_product/presentation/screens/add_product_screen.dart';
+import 'package:products/features/home/Presentation/Screens/products_screen.dart';
+import 'package:products/features/home/presentation/Cubits/categories_cubit/categories_cubit.dart';
+import 'package:products/features/home/presentation/Cubits/products_cubit/products_cubit.dart';
+import 'package:products/features/profile/Presentation/Screens/myProfile_screen.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key, this.initialIndex = 0});
@@ -29,7 +33,18 @@ class _MainViewState extends State<MainView> {
   ];
 
   List<Widget> getBottomNavigationBarBody() {
-    return const [ProductsScreen(), AddProductScreen(), ProfileCard()];
+    return [
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => ProductsCubit()),
+          BlocProvider(create: (context) => CategoriesCubit()),
+          BlocProvider(create: (context) => AddProductCubit())
+        ],
+        child: ProductsScreen(),
+      ),
+      AddProductScreen(),
+      ProfileCard(),
+    ];
   }
 
   @override
